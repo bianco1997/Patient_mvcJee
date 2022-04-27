@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template1"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--pour lier ce contenue avec la section contenet de la page template-->
+<div layout:fragment="content1">
+    <div class="container mt-2">
+        <div class="card">
+            <div class="card-header">Listes des patients</div>
+            <div class="card-body">
+                <form method="get" th:action="@{/user/index}">
+                    <label>KeyWord</label>
+                    <input type="text" name="KeyWord" th:value="${KeyWord}">
+                    <button type="submit" class="btn-primary">Chercher</button>
+                </form>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>id</th><th>nom</th><th>prenom</th><th>date</th><th>malade</th><th>Score</th><th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p:${listPatients}">
+                        <td th:text="${p.getId()}"></td>
+                        <td th:text="${p.getNom()}"></td>
+                        <td th:text="${p.getPrenom()}"></td>
+                        <td th:text="${p.getDateNaiss()}"></td>
+                        <td th:text="${p.isMalade()}"></td>
+                        <td th:text="${p.getScore()}"></td>
+                        <td sec:authorize="hasAuthority('ADMIN')">
+                            <a class="btn btn-danger" th:href="@{/admin/delete(id=${p.getId()},KeyWord=${KeyWord},page=${currentPage})}">
+                                Delete
+                            </a>
+                        </td>
+                        <td sec:authorize="hasAuthority('ADMIN')">
+                            <a class="btn btn-success" th:href="@{admin/editPatient(id=${p.getId()},KeyWord=${KeyWord},page=${currentPage})}">
+                                Edit
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <ul class="nav nav-pills">
+                    <li th:each="page,status:${pages}">
+                        <!--class="btn btn-outline-info m-lg-1"-->
+                        <a th:class="${status.index==currentPage?'btn btn-primary ms-1':'btn btn-primary-info ms-1'}"  th:text="${status.index}"
+                           th:href="@{/user/index(page=${status.index},KeyWord=${KeyWord})}">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
